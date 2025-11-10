@@ -1,0 +1,7 @@
+.pytest/
+venv/
+.venv/Lib/
+.venv/Scripts/
+.idea/
+.pytest_cache/
+__pycache__/
