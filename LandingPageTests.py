@@ -30,8 +30,7 @@ class TestUrbanRoutes(BaseTest):
     def test_comfort_rate(self):
         rates_page = ComfortRate(self.driver)
 
-        comfort_rate_status = rates_page.comfort_status()
-        assert "active" in comfort_rate_status.get_attribute("class")
+        assert rates_page.get_current_selected_plan() == 'Comfort'
 
 
 
@@ -86,8 +85,9 @@ class TestUrbanRoutes(BaseTest):
 
 
     def test_taxi_modal(self):
-        self.prepare_full_order() #repite proceso
+        self.firs_test_prepare_full_order() #repite proceso
         taxi = TaxiModal(self.driver)
+
 
         assert "Buscar automóvil" in taxi.taxi_modal().text, "No apareció el modal"
 
@@ -95,12 +95,12 @@ class TestUrbanRoutes(BaseTest):
 
 
     def test_driver_modal(self):
-        self.prepare_full_order()  #repite proceso
+        self.second_test_prepare_full_order()  #repite proceso
         driver = DriverModal(self.driver)
         driver.driver_modal_appears()
 
         assert "El conductor llegará en" in driver.driver_modal().text, "No apareció el modal"
-
+        assert driver.is_driver_name_visible()
 
 
     @classmethod

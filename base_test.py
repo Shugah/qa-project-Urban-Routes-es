@@ -1,5 +1,6 @@
 from selenium.webdriver import Chrome, ChromeOptions
 import data
+import time
 from LandingPageMethods import (
     UrbanRoutesPage,
     ComfortRate,
@@ -8,7 +9,8 @@ from LandingPageMethods import (
     MessageForTheDriver,
     BlanketAndTissues,
     OrderTwoIceCreams,
-    TaxiModal
+    TaxiModal,
+    DriverModal
 )
 
 class BaseTest:
@@ -33,8 +35,15 @@ class BaseTest:
 
     # Antes de CADA test individual
     def setup_method(self):
+        # 🔹 Reinicia la sesión completa
         self.driver.delete_all_cookies()
+        self.driver.get("about:blank")
         self.driver.get(data.urban_routes_url)
+        self.driver.refresh()
+        self.driver.execute_script("window.localStorage.clear(); window.sessionStorage.clear();")
+
+
+        time.sleep(1)
 
         #Establece ruta (desde, hasta)
         routes_page = UrbanRoutesPage(self.driver)
@@ -56,10 +65,8 @@ class BaseTest:
 
 
 
-
-
-    #Prepara el flujo COMPLETO para TAXI y DRIVER modal
-    def prepare_full_order(self):
+    # Prepara el flujo COMPLETO para TAXI y DRIVER modal
+    def firs_test_prepare_full_order(self):
         phone_section = PhoneNumberSection(self.driver)
         phone_section.phone_number()
 
@@ -73,7 +80,32 @@ class BaseTest:
         blanket_and_tissues.switch_on()
 
         ice_creams = OrderTwoIceCreams(self.driver)
-        ice_creams.click_plus_button()
+        ice_creams.order_ice_creams()
 
         taxi = TaxiModal(self.driver)
         taxi.modal_to_search_taxi_appears()
+
+
+
+    #Prepara el flujo COMPLETO para TAXI y DRIVER modal
+    def second_test_prepare_full_order(self):
+        phone_section = PhoneNumberSection(self.driver)
+        phone_section.phone_number()
+
+        credit_card_section = CreditCardSection(self.driver)
+        credit_card_section.credit_card()
+
+        message = MessageForTheDriver(self.driver)
+        message.write_message_to_driver()
+
+        blanket_and_tissues = BlanketAndTissues(self.driver)
+        blanket_and_tissues.switch_on()
+
+        ice_creams = OrderTwoIceCreams(self.driver)
+        ice_creams.order_ice_creams()
+
+        taxi = TaxiModal(self.driver)
+        taxi.modal_to_search_taxi_appears()
+
+        driver = DriverModal(self.driver)
+        driver.driver_modal_appears()

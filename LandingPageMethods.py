@@ -45,7 +45,8 @@ class UrbanRoutesPage:
 
 class ComfortRate:
     order_taxi = (By.XPATH, "//button[@type='button' and contains(text(), 'Pedir un taxi')]")
-    comfort_taxi = (By.CLASS_NAME, "i-button")
+    comfort_taxi = (By.XPATH, "//img[@alt='Comfort']")
+    active_plan_card = (By.XPATH, '//div[@class="tcard active"]//div[@class="tcard-title"]')
     comfort_taxi_active = (By.CLASS_NAME, "tcard.active")
 
     def __init__(self, driver):
@@ -58,8 +59,9 @@ class ComfortRate:
     def click_comfort_taxi(self):
         self.wait.until(EC.visibility_of_element_located(self.comfort_taxi)).click()
 
-    def comfort_status(self):
-        return self.wait.until(EC.presence_of_element_located(self.comfort_taxi))
+
+    def get_current_selected_plan(self):
+        return self.driver.find_element(*self.active_plan_card).text
 
 
 
@@ -67,6 +69,7 @@ class ComfortRate:
     def select_comfort_taxi(self):
         self.click_order_taxi()
         self.click_comfort_taxi()
+
 
 
 
@@ -187,9 +190,7 @@ class MessageForTheDriver:
 
 
 
-class BlanketAndTissues:
-    requirement_trigger = (By.CLASS_NAME, 'reqs-arrow')
-    rate_requirements = (By.CLASS_NAME, 'r-link-label')
+class   BlanketAndTissues:
     switch = (By.CLASS_NAME, "slider")
     option_switches = (By.CLASS_NAME, 'switch')
     option_switches_inputs = (By.CLASS_NAME, 'switch-input')
@@ -199,12 +200,6 @@ class BlanketAndTissues:
         self.driver = driver
         self.wait = WebDriverWait(self.driver, 10)
 
-
-    def trigger(self):
-        self.driver.find_element(*self.requirement_trigger).click()
-
-    def select_rate(self):
-        self.wait.until(EC.element_to_be_clickable(self.rate_requirements)).click()
 
     def switch_enabled(self):
         self.driver.find_element(*self.switch).click()
@@ -217,10 +212,7 @@ class BlanketAndTissues:
 
             #ALL FOR ONE. Pedir una manta y pañuelos.
     def switch_on(self):
-        self.trigger()
-        self.select_rate()
-        self.switch_enabled()
-
+        self.driver.find_element(*self.switch).click()
 
 
 
@@ -228,25 +220,17 @@ class BlanketAndTissues:
 class OrderTwoIceCreams:
     plus_button = (By.XPATH, "//div[@class='r-counter']//div[@class='counter-plus']")
     ice_creams_units = (By.XPATH, "//div[@class='r-counter']//div[@class='counter-value']")
-    requirement_trigger = (By.CLASS_NAME, 'reqs-arrow')
-    rate_requirements = (By.CLASS_NAME, 'r-link-label')
 
     def __init__(self, driver):
         self.driver = driver
         self.wait = WebDriverWait(self.driver, 10)
 
-
-
-    def trigger(self):
-        self.driver.find_element(*self.requirement_trigger).click()
-
-    def select_rate(self):
-        self.wait.until(EC.element_to_be_clickable(self.rate_requirements)).click()
-
     def click_plus_button(self):
-        plus_button = self.wait.until(EC.element_to_be_clickable(self.plus_button))
-        plus_button.click()
-        plus_button.click()
+        WebDriverWait(self.driver, 3).until(EC.element_to_be_clickable(self.plus_button))
+        option_add_controls = self.driver.find_elements(*self.plus_button)
+        self.driver.execute_script("arguments[0].scrollIntoView();", option_add_controls[0])
+        option_add_controls[0].click()
+        option_add_controls[0].click()
 
 
     def get_units(self):
@@ -255,8 +239,6 @@ class OrderTwoIceCreams:
 
     # ALL FOR ONE. Pedir 2 helados.
     def order_ice_creams(self):
-        self.trigger()
-        self.select_rate()
         self.click_plus_button()
 
 
@@ -289,18 +271,22 @@ class TaxiModal:
 
 class DriverModal:
     driver_modal_section = (By.CLASS_NAME, "order-header-title")
+    driver_name = (By.CSS_SELECTOR, ".order.shown .order-button[style*='cursor']")
 
 
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(self.driver, 10)
+        self.wait = WebDriverWait(self.driver, 28)
         self.sleep = time.sleep
 
-    def a_wait(self, seconds=37):
+    def a_wait(self, seconds=13):
         time.sleep(seconds)
 
     def driver_modal(self):
         return self.wait.until(EC.visibility_of_element_located(self.driver_modal_section))
+
+    def is_driver_name_visible(self):
+        return self.driver.find_element(*self.driver_name).is_displayed()
 
     def driver_modal_appears(self):
         self.a_wait()
