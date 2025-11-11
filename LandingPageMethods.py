@@ -53,10 +53,10 @@ class ComfortRate:
         self.wait = WebDriverWait(self.driver, 10)
 
     def click_order_taxi(self):
-        self.wait.until(EC.element_to_be_clickable(self.order_taxi)).click()
+        self.wait.until(EC.visibility_of_element_located(self.order_taxi)).click()
 
     def click_comfort_taxi(self):
-        self.wait.until(EC.element_to_be_clickable(self.comfort_taxi)).click()
+        self.wait.until(EC.visibility_of_element_located(self.comfort_taxi)).click()
 
     def comfort_status(self):
         return self.wait.until(EC.presence_of_element_located(self.comfort_taxi))
@@ -264,7 +264,7 @@ class OrderTwoIceCreams:
 
 
 class TaxiModal:
-    modal_trigger_button = (By.CLASS_NAME, "smart-button")
+    modal_trigger_button = (By.XPATH, "//span[@class='smart-button-main' and text()='Pedir un taxi']")
     modal_expected = (By.CLASS_NAME, "order-header-title")
 
 
@@ -282,6 +282,8 @@ class TaxiModal:
             #ALL FOR ONE
     def modal_to_search_taxi_appears(self):
         self.modal()
+
+
 
 
 
